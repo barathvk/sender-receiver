@@ -28,10 +28,11 @@ func loadConfig() Config {
 
 func main() {
 	isSender := flag.Bool("sender", false, "is sender")
+	initialCount := flag.Int("initial-count", 0, "sender initial count")
 	flag.Parse()
 	config := loadConfig()
 	if *isSender {
-		sender.Start(config.AppId, 0)
+		sender.Start(config.AppId, *initialCount)
 	} else {
 		receiver.Start(config.AppId, config.Port)
 	}

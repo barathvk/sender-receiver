@@ -23,11 +23,11 @@ func sendRequest(count int, appId string, nodeId string, logger *log.Entry) {
 	}
 }
 
-func Start(appId string, initialValue int) {
+func Start(appId string, initialCount int) {
 	nodeId := ksuid.New().String()
 	logger := log.WithFields(log.Fields{"appId": appId, "nodeId": nodeId})
-	logger.Info("starting sender...")
-	count := initialValue
+	logger.Info("starting sender with initial count ", initialCount)
+	count := initialCount
 	sendRequest(count, appId, nodeId, logger)
 	count += 1
 	for range time.Tick(time.Second * 1) {
