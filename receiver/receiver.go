@@ -3,18 +3,27 @@ package receiver
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/barathvk/sender-receiver/common"
 	"github.com/gin-gonic/gin"
+	cmd "github.com/go-cmd/cmd"
 	log "github.com/sirupsen/logrus"
 )
 
 var lastRequest time.Time
 var latestCount int
+var currentSender *cmd.Cmd
 
 func startSender(appId string, initialCount int) {
 	log.Info("Starting sender with initial count ", initialCount)
+	cmdOptions := cmd.Options{
+		Buffered:  false,
+		Streaming: true,
+	}
+	currentSender = cmd.NewCmdOptions(cmdOptions, "./sender-receiver", "--sender", "--initial-count", strconv.Itoa(latestCount+1))
+	<-currentSender.Start()
 }
 
 func heartbeat(appId string) {
@@ -36,6 +45,17 @@ func setupServer(logger *log.Entry) *gin.Engine {
 		latestCount = count.Count
 		logger.WithFields(log.Fields{"nodeId": count.NodeId, "senderAppId": count.AppId}).Info("Received count ", count.Count)
 		context.JSON(http.StatusAccepted, gin.H{"status": "accepted", "count": count.Count})
+	})
+	server.POST("/stop", func(context *gin.Context) {
+		status := currentSender.Status()
+		logger.Warn("stopping sender with pid ", status.PID, " (runtime ", status.Runtime, ")")
+		err := currentSender.Stop()
+		if err != nil {
+			logger.Warn(err)
+			context.JSON(http.StatusInternalServerError, gin.H{"status": "error", "pid": status.PID, "error": err.Error()})
+		} else {
+			context.JSON(http.StatusAccepted, gin.H{"status": "accepted", "pid": status.PID})
+		}
 	})
 	return server
 }
