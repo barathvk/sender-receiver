@@ -1,16 +1,3 @@
-variable "name" {
-  default = "sender-receiver"
-}
-
-variable "location" {
-  default = "europe-west3-a"
-}
-
-variable "node_count" {
-  default = 1
-}
-variable "project" {}
-
 resource "google_service_account" "main" {
   account_id   = var.name
   display_name = var.name

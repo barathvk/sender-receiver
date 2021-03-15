@@ -1,25 +1,12 @@
 data "google_client_config" "default" {}
-provider "kubernetes" {
-  token                  = data.google_client_config.default.access_token
-  client_certificate     = base64decode(google_container_cluster.main.master_auth.0.client_certificate)
-  cluster_ca_certificate = base64decode(google_container_cluster.main.master_auth.0.cluster_ca_certificate)
-  client_key             = base64decode(google_container_cluster.main.master_auth.0.client_key)
-  host                   = google_container_cluster.main.endpoint
-}
-
-provider "helm" {
-  kubernetes {
-    token                  = data.google_client_config.default.access_token
-    client_certificate     = base64decode(google_container_cluster.main.master_auth.0.client_certificate)
-    cluster_ca_certificate = base64decode(google_container_cluster.main.master_auth.0.cluster_ca_certificate)
-    client_key             = base64decode(google_container_cluster.main.master_auth.0.client_key)
-    host                   = google_container_cluster.main.endpoint
-  }
-}
-
 resource "kubernetes_namespace" "redis" {
   metadata {
     name = "redis"
+  }
+}
+resource "kubernetes_namespace" "ingress_nginx" {
+  metadata {
+    name = "ingress-nginx"
   }
 }
 
@@ -28,4 +15,34 @@ resource "helm_release" "redis" {
   chart      = "redis"
   name       = "redis"
   namespace  = kubernetes_namespace.redis.metadata.0.name
+}
+
+resource "helm_release" "ingress_nginx" {
+  repository = "https://kubernetes.github.io/ingress-nginx"
+  chart      = "ingress-nginx"
+  name       = "ingress-nginx"
+  namespace  = kubernetes_namespace.ingress_nginx.metadata.0.name
+}
+resource "helm_release" "external_dns" {
+  repository = "https://charts.bitnami.com/bitnami"
+  chart      = "external-dns"
+  name       = "external-dns"
+  namespace  = kubernetes_namespace.ingress_nginx.metadata.0.name
+  values = [
+    <<EOF
+    sources:
+      - ingress
+      - istio-virtualservice
+    provider: cloudflare
+    cloudflare:
+      email: ${var.cloudflare_email}
+      apiKey: ${var.cloudflare_api_key}
+      proxied: true
+    domainFilters:
+      - ${var.domain}
+    txtOwnerId: ${var.name}
+    logLevel: debug
+    policy: sync
+    EOF
+  ]
 }
