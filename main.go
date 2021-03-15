@@ -2,38 +2,36 @@ package main
 
 import (
 	"flag"
-	"os"
 
 	"github.com/barathvk/sender-receiver/receiver"
 	"github.com/barathvk/sender-receiver/sender"
-	yaml "gopkg.in/yaml.v2"
+	"github.com/joho/godotenv"
+	"github.com/kelseyhightower/envconfig"
 )
 
 type Config struct {
-	AppId string `yaml:"appId"`
-	Port  int    `yaml:"port"`
-	Redis string `yaml:"redis"`
+	AppId string `envconfig:"APP_ID"`
+	Port  int    `envconfig:"PORT"`
+	Redis string `envconfig:"REDIS_ADDRESS"`
 }
 
 func loadConfig() Config {
-	configFile, err := os.Open("config.yml")
+	var config Config
+	err := envconfig.Process("", &config)
 	if err != nil {
 		panic(err)
 	}
-	defer configFile.Close()
-	decoder := yaml.NewDecoder(configFile)
-	var config Config
-	decoder.Decode(&config)
 	return config
 }
 
 func main() {
+	godotenv.Load()
 	isSender := flag.Bool("sender", false, "is sender")
 	flag.Parse()
 	config := loadConfig()
 	if *isSender {
 		sender.Start(config.AppId, config.Redis)
 	} else {
-		receiver.Start(config.AppId, config.Port)
+		receiver.Start(config.AppId, config.Port, config.Redis)
 	}
 }

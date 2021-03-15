@@ -3,3 +3,4 @@ sender-receiver
 .terraform.lock.hcl
 *.tfstate*
 *.tfvars
+.env

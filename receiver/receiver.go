@@ -88,12 +88,12 @@ func setupServer(logger *log.Entry) *gin.Engine {
 	return server
 }
 
-func Start(appId string, port int) {
+func Start(appId string, port int, redisConnString string) {
 	logger := log.WithField("appId", appId)
-	logger.Info("Starting receiver...")
 	server := setupServer(logger)
 	go heartbeat(appId)
-	go subscribe("localhost:6379", logger)
+	go subscribe(redisConnString, logger)
+	logger.Info("Redis cluster is at ", redisConnString)
 	logger.Info("Starting receiver server on port ", port)
 	err := server.Run(fmt.Sprintf(":%d", port))
 	if err != nil {
