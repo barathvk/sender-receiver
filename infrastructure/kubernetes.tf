@@ -32,7 +32,6 @@ resource "helm_release" "external_dns" {
     <<EOF
     sources:
       - ingress
-      - istio-virtualservice
     provider: cloudflare
     cloudflare:
       email: ${var.cloudflare_email}
