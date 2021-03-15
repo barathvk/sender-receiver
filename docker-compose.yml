@@ -5,3 +5,12 @@ services:
     image: redis:alpine
     ports:
       - 6379:6379
+  receiver:
+    restart: always
+    build:
+      context: .
+    environment:
+      REDIS_ADDRESS: redis:6379
+      PORT: 8080
+    ports:
+      - 8080:8080

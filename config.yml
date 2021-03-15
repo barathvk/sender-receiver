@@ -1,3 +1,0 @@
-appId: sender-receiver
-port: 8080
-redis: localhost:6379
