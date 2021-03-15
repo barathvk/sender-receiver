@@ -1,9 +1,10 @@
-name: review
-"on":
+name: production
+
+on:
   push:
-    branches:
+    tags:
       - "*"
-      - "!master"
+
 jobs:
   build_image:
     runs-on: ubuntu-latest
