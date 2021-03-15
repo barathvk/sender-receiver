@@ -12,6 +12,7 @@ import (
 type Config struct {
 	AppId string `yaml:"appId"`
 	Port  int    `yaml:"port"`
+	Redis string `yaml:"redis"`
 }
 
 func loadConfig() Config {
@@ -28,11 +29,10 @@ func loadConfig() Config {
 
 func main() {
 	isSender := flag.Bool("sender", false, "is sender")
-	initialCount := flag.Int("initial-count", 0, "sender initial count")
 	flag.Parse()
 	config := loadConfig()
 	if *isSender {
-		sender.Start(config.AppId, *initialCount)
+		sender.Start(config.AppId, config.Redis)
 	} else {
 		receiver.Start(config.AppId, config.Port)
 	}
