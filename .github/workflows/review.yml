@@ -15,6 +15,7 @@ jobs:
       - uses: mr-smithers-excellent/docker-build-push@v3
         with:
           image: ${{ secrets.DOCKER_USERNAME }}/${{ env.REPOSITORY_NAME }}
+          registry: docker.io
           password: ${{ secrets.DOCKER_PASSWORD}}
           tag: ${{ env.GITHUB_REF_SLUG }}
           username: ${{ secrets.DOCKER_USERNAME}}
