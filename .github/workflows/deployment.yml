@@ -52,8 +52,6 @@ jobs:
       - run: gcloud container clusters get-credentials sender-receiver --zone europe-west3-a
         name: get kubernetes credentials
       - uses: hashicorp/setup-terraform@v1
-        with:
-          terraform_wrapper: false
         name: setup terraform
       - run: terraform init
         working-directory: deploy
