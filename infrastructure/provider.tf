@@ -1,5 +1,9 @@
 terraform {
   required_version = ">= 0.13"
+  backend "gcs" {
+    bucket = "tf-state-sender-receiver"
+    prefix = "terraform/infrastructure"
+  }
   required_providers {
     cloudflare = {
       source  = "cloudflare/cloudflare"

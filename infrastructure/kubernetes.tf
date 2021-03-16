@@ -15,6 +15,14 @@ resource "helm_release" "redis" {
   chart      = "redis"
   name       = "redis"
   namespace  = kubernetes_namespace.redis.metadata.0.name
+  set {
+    name  = "usePassword"
+    value = "false"
+  }
+  set {
+    name  = "master.disableCommands"
+    value = ""
+  }
 }
 
 resource "helm_release" "ingress_nginx" {
