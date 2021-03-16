@@ -19,7 +19,7 @@ jobs:
         name: get kubernetes credentials
       - uses: hashicorp/setup-terraform@v1
         name: setup terraform
-      - run: terraform init -backend-config prefix=terraform/${{ env.REPOSITORY_NAME }}-${{ env.GITHUB_REF_SLUG }}
+      - run: terraform init -backend-config prefix=terraform/${{ env.REPOSITORY_NAME }}-${{ env.GITHUB_EVENT_REF_SLUG }}
         working-directory: deploy
-      - run: terraform destroy -force -var name=${{ env.GITHUB_REF_SLUG }} -var namespace=${{ env.REPOSITORY_NAME }} -var image="" -var domain=${{ secrets.DOMAIN }} -var port=8080
+      - run: terraform destroy -force -var name=${{ env.GITHUB_EVENT_REF_SLUG }} -var namespace=${{ env.REPOSITORY_NAME }} -var image="" -var domain=${{ secrets.DOMAIN }} -var port=8080
         working-directory: deploy
