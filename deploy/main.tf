@@ -2,8 +2,10 @@ variable "name" {}
 variable "namespace" {}
 variable "image" {}
 variable "domain" {}
-backend "gcs" {
-  bucket = "tf-state-sender-receiver"
+terraform {
+  backend "gcs" {
+    bucket = "tf-state-sender-receiver"
+  }
 }
 variable "port" {
   default = 8080
