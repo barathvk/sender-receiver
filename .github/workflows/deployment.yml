@@ -37,6 +37,10 @@ jobs:
         uses: actions/download-artifact@v1
         with:
           name: image_sha
+      - run: echo REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//") >> $GITHUB_ENV
+        name: get repository name slug
+      - uses: rlespinasse/github-slug-action@v3.x
+        name: get repository branch name slug
       - name: set sha value
         run: echo IMAGE_SHA=$(cat image_sha/image_sha.txt) >> $GITHUB_ENV
       - uses: google-github-actions/setup-gcloud@master
@@ -51,10 +55,12 @@ jobs:
         name: setup terraform
       - run: terraform init deploy
       - run: >
-          terraform apply -auto-approve \
+          terraform plan \
+            -out plan.out \
             -var name=${{ env.GITHUB_REF_SLUG }} \
             -var namespace=${{ env.REPOSITORY_NAME }} \
             -var image=${{ env.IMAGE_SHA }} \
             -var domain=${{ secrets.DOMAIN }} \
             -var port=8080 \
             deploy
+      - run: terraform apply -auto-approve plan.out
