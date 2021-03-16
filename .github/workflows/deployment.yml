@@ -33,6 +33,8 @@ jobs:
     needs: build-image
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
+        name: pull latest commit
       - name: download image sha
         uses: actions/download-artifact@v1
         with:
@@ -53,7 +55,7 @@ jobs:
         name: get kubernetes credentials
       - uses: hashicorp/setup-terraform@v1
         name: setup terraform
-      - name: copy terraform files
-        run: cp deploy/*.tf .
       - run: terraform init
+        working-directory: deploy
       - run: terraform apply -var name=${{ env.GITHUB_REF_SLUG }} -var namespace=${{ env.REPOSITORY_NAME }} -var image=${{ env.IMAGE_SHA }} -var domain=${{ secrets.DOMAIN }} -var port=8080
+        working-directory: deploy
