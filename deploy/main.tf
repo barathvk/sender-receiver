@@ -30,9 +30,16 @@ resource "kubernetes_deployment" "sender_receiver" {
           image = var.image
           name  = var.name
           env {
-            REDIS_ADDRESS = "redis-master.redis:6379"
-            APP_ID        = "${var.namespace}-${var.name}"
-            PORT          = var.port
+            name  = "REDIS_ADDRESS"
+            value = "redis-master.redis:6379"
+          }
+          env {
+            name  = "APP_ID"
+            value = "${var.namespace}-${var.name}"
+          }
+          env {
+            name  = "PORT"
+            value = var.port
           }
           port {
             container_port = var.port
