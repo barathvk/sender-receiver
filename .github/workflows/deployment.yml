@@ -1,0 +1,52 @@
+name: deploy
+"on":
+  push:
+    branches:
+      - "*"
+    tags:
+      - "*"
+jobs:
+  build-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        name: pull latest commit
+      - run: echo REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//") >> $GITHUB_ENV
+        name: get repository name slug
+      - uses: rlespinasse/github-slug-action@v3.x
+        name: get repository branch name slug
+      - uses: mr-smithers-excellent/docker-build-push@v3
+        name: build and push docker image to dockerhub
+        with:
+          image: ${{ secrets.DOCKER_USERNAME }}/${{ env.REPOSITORY_NAME }}
+          registry: docker.io
+          password: ${{ secrets.DOCKER_PASSWORD}}
+          tag: ${{ env.GITHUB_REF_SLUG }}
+          username: ${{ secrets.DOCKER_USERNAME}}
+      - run: docker inspect --format='{{index .RepoDigests 0}}' ${{ secrets.DOCKER_USERNAME }}/${REPOSITORY_NAME}:${GITHUB_REF_SLUG} > image_sha.txt
+        name: keep a record of the image sha
+      - uses: actions/upload-artifact@v1
+        with:
+          name: image_sha
+          path: image_sha.txt
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: download image sha
+        uses: actions/download-artifact@v1
+        with:
+          name: image_sha
+      - name: set sha value
+        run: echo IMAGE_SHA=$(cat image_sha/image_sha.txt) >> $GITHUB_ENV
+      - uses: google-github-actions/setup-gcloud@master
+        name: login to google cloud
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          export_default_credentials: true
+      - run: gcloud container clusters get-credentials sender-receiver --zone europe-west3-a
+        name: get kubernetes credentials
+      - uses: hashicorp/setup-terraform@v1
+        name: setup terraform
+      - run: terraform init
+      - run: terraform apply -auto-approve -var name=${{ env.GITHUB_REF_SLUG }} -var namespace=${{ env.REPOSITORY_NAME }} -var image=${{ env.IMAGE_SHA }} -var domain=${{ secrets.DOMAIN }} -var port=8080
