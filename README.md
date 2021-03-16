@@ -112,3 +112,5 @@ The CI system performs 3 tasks:
       3. redis
   1. Once a branch is deleted, the review deployment is deleted
 
+The deployment `terraform` files can be reviewed [here](https://github.com/barathvk/sender-receiver/tree/v4.0.0/deploy)
+
