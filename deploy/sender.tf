@@ -1,6 +1,6 @@
 resource "kubernetes_deployment" "sender" {
   metadata {
-    name      = var.name
+    name      = "${var.name}-sender"
     namespace = var.namespace
   }
   spec {
@@ -19,7 +19,7 @@ resource "kubernetes_deployment" "sender" {
       spec {
         container {
           image = var.image
-          name  = var.name
+          name  = "${var.name}-sender"
           args  = ["--sender"]
           env {
             name  = "REDIS_ADDRESS"

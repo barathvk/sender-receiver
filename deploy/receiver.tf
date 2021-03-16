@@ -1,6 +1,6 @@
 resource "kubernetes_deployment" "receiver" {
   metadata {
-    name      = var.name
+    name      = "${var.name}-receiver"
     namespace = var.namespace
   }
   spec {
@@ -19,7 +19,7 @@ resource "kubernetes_deployment" "receiver" {
       spec {
         container {
           image = var.image
-          name  = var.name
+          name  = "${var.name}-receiver"
           env {
             name  = "REDIS_ADDRESS"
             value = "redis-master.redis:6379"

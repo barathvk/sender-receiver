@@ -60,5 +60,5 @@ jobs:
       - run: kubectl create ns --dry-run=client -o yaml ${{ env.REPOSITORY_NAME }} | kubectl apply -f -
       - run: terraform init -backend-config prefix=terraform/${{ env.REPOSITORY_NAME }}-${{ env.GITHUB_REF_SLUG }}
         working-directory: deploy
-      - run: terraform apply -auto-approve -var name=${{ env.GITHUB_REF_SLUG }} -var namespace=${{ env.REPOSITORY_NAME }} -var image=${{ env.IMAGE_SHA }} -var domain=${{ secrets.DOMAIN }} -var port=8080
+      - run: terraform apply -auto-approve -var name=${{ env.GITHUB_REF_SLUG }} -var namespace=${{ env.REPOSITORY_NAME }} -var image=${{ env.IMAGE_SHA }} -var domain=${{ secrets.DOMAIN }}
         working-directory: deploy
