@@ -1,4 +1,4 @@
-resource "kubernetes_deployment" "receiver" {
+resource "kubernetes_deployment" "sender" {
   metadata {
     name      = var.name
     namespace = var.namespace
