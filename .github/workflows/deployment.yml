@@ -30,6 +30,7 @@ jobs:
           name: image_sha
           path: image_sha.txt
   deploy:
+    needs: build-image
     runs-on: ubuntu-latest
     steps:
       - name: download image sha
