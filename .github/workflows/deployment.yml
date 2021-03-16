@@ -55,7 +55,10 @@ jobs:
         name: get kubernetes credentials
       - uses: hashicorp/setup-terraform@v1
         name: setup terraform
+      - uses: azure/setup-kubectl@v1
+        name: setup kubectl
+      - run: kubectl create ns --dry-run=client -o yaml ${{ env.REPOSITORY_NAME }} | kubectl apply -f -
       - run: terraform init
         working-directory: deploy
-      - run: terraform apply -var name=${{ env.GITHUB_REF_SLUG }} -var namespace=${{ env.REPOSITORY_NAME }} -var image=${{ env.IMAGE_SHA }} -var domain=${{ secrets.DOMAIN }} -var port=8080
+      - run: terraform apply -auto-approve -var name=${{ env.GITHUB_REF_SLUG }} -var namespace=${{ env.REPOSITORY_NAME }} -var image=${{ env.IMAGE_SHA }} -var domain=${{ secrets.DOMAIN }} -var port=8080
         working-directory: deploy
