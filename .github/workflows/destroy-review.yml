@@ -1,0 +1,25 @@
+name: destroy-review
+
+on: [delete]
+
+jobs:
+  destroy-review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: echo REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//") >> $GITHUB_ENV
+      - uses: rlespinasse/github-slug-action@v3.x
+      - uses: google-github-actions/setup-gcloud@master
+        name: login to google cloud
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          export_default_credentials: true
+      - run: gcloud container clusters get-credentials sender-receiver --zone europe-west3-a
+        name: get kubernetes credentials
+      - uses: hashicorp/setup-terraform@v1
+        name: setup terraform
+      - run: terraform init -backend-config prefix=terraform/${{ env.REPOSITORY_NAME }}-${{ env.GITHUB_REF_SLUG }}
+        working-directory: deploy
+      - run: terraform destroy -force -var name=${{ env.GITHUB_REF_SLUG }} -var namespace=${{ env.REPOSITORY_NAME }} -var image="" -var domain=${{ secrets.DOMAIN }} -var port=8080
+        working-directory: deploy
