@@ -49,10 +49,10 @@ jobs:
         name: get kubernetes credentials
       - uses: hashicorp/setup-terraform@v1
         name: setup terraform
-      - run: terraform init
+      - run: ${TERRAFORM_CLI_PATH}/terraform init
         working-directory: deploy
       - run: >
-          terraform apply -auto-approve \
+          ${TERRAFORM_CLI_PATH}/terraform apply -auto-approve \
             -var name=${{ env.GITHUB_REF_SLUG }} \
             -var namespace=${{ env.REPOSITORY_NAME }} \
             -var image=${{ env.IMAGE_SHA }} \
