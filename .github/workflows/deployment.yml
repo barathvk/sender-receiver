@@ -54,13 +54,5 @@ jobs:
       - uses: hashicorp/setup-terraform@v1
         name: setup terraform
       - run: terraform init deploy
-      - run: >
-          terraform plan 
-            -out plan.out
-            -var name=${{ env.GITHUB_REF_SLUG }}
-            -var namespace=${{ env.REPOSITORY_NAME }}
-            -var image=${{ env.IMAGE_SHA }}
-            -var domain=${{ secrets.DOMAIN }}
-            -var port=8080
-            deploy
+      - run: terraform plan -out plan.out -var name=${{ env.GITHUB_REF_SLUG }} -var namespace=${{ env.REPOSITORY_NAME }} -var image=${{ env.IMAGE_SHA }} -var domain=${{ secrets.DOMAIN }} -var port=8080 deploy
       - run: terraform apply -auto-approve plan.out
