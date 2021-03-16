@@ -114,3 +114,7 @@ The CI system performs 3 tasks:
 
 The deployment `terraform` files can be reviewed [here](https://github.com/barathvk/sender-receiver/tree/v4.0.0/deploy)
 
+## Additional resources
+
+The CI runs and logs can be seen [here](https://github.com/barathvk/sender-receiver/actions)
+The pull requests for each feature can be seen [here](https://github.com/barathvk/sender-receiver/pulls?q=is%3Apr+is%3Aclosed)
