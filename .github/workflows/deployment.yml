@@ -52,7 +52,8 @@ jobs:
       - run: gcloud container clusters get-credentials sender-receiver --zone europe-west3-a
         name: get kubernetes credentials
       - uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_wrapper: false
         name: setup terraform
-      - run: terraform init deploy
-      - run: terraform plan -out plan.out -var name=${{ env.GITHUB_REF_SLUG }} -var namespace=${{ env.REPOSITORY_NAME }} -var image=${{ env.IMAGE_SHA }} -var domain=${{ secrets.DOMAIN }} -var port=8080 deploy
-      - run: terraform apply -auto-approve plan.out
+      - run: terraform init ${GITHUB_WORKSPACE}/deploy
+      - run: terraform apply -var name=${{ env.GITHUB_REF_SLUG }} -var namespace=${{ env.REPOSITORY_NAME }} -var image=${{ env.IMAGE_SHA }} -var domain=${{ secrets.DOMAIN }} -var port=8080 ${GITHUB_WORKSPACE}/deploy
