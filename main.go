@@ -11,7 +11,6 @@ import (
 
 type Config struct {
 	AppId string `envconfig:"APP_ID"`
-	Port  int    `envconfig:"PORT"`
 	Redis string `envconfig:"REDIS_ADDRESS"`
 }
 
@@ -32,6 +31,6 @@ func main() {
 	if *isSender {
 		sender.Start(config.AppId, config.Redis)
 	} else {
-		receiver.Start(config.AppId, config.Port, config.Redis)
+		receiver.Start(config.AppId, config.Redis)
 	}
 }
