@@ -1,30 +1,9 @@
 data "google_client_config" "default" {}
-resource "kubernetes_namespace" "redis" {
-  metadata {
-    name = "redis"
-  }
-}
 resource "kubernetes_namespace" "ingress_nginx" {
   metadata {
     name = "ingress-nginx"
   }
 }
-
-resource "helm_release" "redis" {
-  repository = "https://charts.bitnami.com/bitnami"
-  chart      = "redis"
-  name       = "redis"
-  namespace  = kubernetes_namespace.redis.metadata.0.name
-  set {
-    name  = "usePassword"
-    value = "false"
-  }
-  set {
-    name  = "master.disableCommands"
-    value = ""
-  }
-}
-
 resource "helm_release" "ingress_nginx" {
   repository = "https://kubernetes.github.io/ingress-nginx"
   chart      = "ingress-nginx"
