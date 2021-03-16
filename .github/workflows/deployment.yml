@@ -55,5 +55,7 @@ jobs:
         with:
           terraform_wrapper: false
         name: setup terraform
-      - run: terraform init ${GITHUB_WORKSPACE}/deploy
-      - run: terraform apply -var name=${{ env.GITHUB_REF_SLUG }} -var namespace=${{ env.REPOSITORY_NAME }} -var image=${{ env.IMAGE_SHA }} -var domain=${{ secrets.DOMAIN }} -var port=8080 ${GITHUB_WORKSPACE}/deploy
+      - run: terraform init
+        working-directory: deploy
+      - run: terraform apply -var name=${{ env.GITHUB_REF_SLUG }} -var namespace=${{ env.REPOSITORY_NAME }} -var image=${{ env.IMAGE_SHA }} -var domain=${{ secrets.DOMAIN }} -var port=8080
+        working-directory: deploy
