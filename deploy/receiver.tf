@@ -22,7 +22,7 @@ resource "kubernetes_deployment" "receiver" {
           name  = "${var.name}-receiver"
           env {
             name  = "REDIS_ADDRESS"
-            value = "redis-master.redis:6379"
+            value = "${var.name}-redis:6379"
           }
           env {
             name  = "APP_ID"

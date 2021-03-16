@@ -23,7 +23,7 @@ resource "kubernetes_deployment" "sender" {
           args  = ["--sender"]
           env {
             name  = "REDIS_ADDRESS"
-            value = "redis-master.redis:6379"
+            value = "${var.name}-redis:6379"
           }
           env {
             name  = "APP_ID"
